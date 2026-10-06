@@ -1,0 +1,33 @@
+{
+  "name": "Pizza Sales Dashboard",
+  "dataColors": ["#22c58b", "#7c4dff", "#f43f5e", "#14b8a6", "#f5c542", "#fb923c", "#22d3ee", "#a855f7", "#ec4899", "#3b82f6"],
+  "foreground": "#1c2b3a",
+  "background": "#FFFFFF",
+  "tableAccent": "#1e4d8a",
+  "good": "#22c55e",
+  "neutral": "#7c4dff",
+  "bad": "#f43f5e",
+  "maximum": "#163a6b",
+  "center": "#22c58b",
+  "minimum": "#f43f5e",
+  "textClasses": {
+    "callout": { "fontSize": 14, "fontFace": "Segoe UI", "color": "#163a6b" },
+    "title": { "fontSize": 12, "fontFace": "Segoe UI Semibold", "color": "#1c2b3a" },
+    "header": { "fontSize": 11, "fontFace": "Segoe UI", "color": "#7a8aa0" },
+    "label": { "fontSize": 10, "fontFace": "Segoe UI", "color": "#475569" }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{ "color": { "solid": { "color": "#FFFFFF" } } }],
+        "border": [{ "show": true, "color": { "solid": { "color": "#e8eef6" } }, "radius": 8 }],
+        "visualHeader": [{ "show": false }]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [{ "color": { "solid": { "color": "#eef3f9" } } }]
+      }
+    }
+  }
+}

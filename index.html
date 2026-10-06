@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pizza Sales Report & Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #163a6b;
+      --navy-2: #1f4e8c;
+      --page: #eef3f9;
+      --card: #ffffff;
+      --text: #1c2b3a;
+      --muted: #7a8aa0;
+      --green-1: #2fe0c0;
+      --green-2: #22c58b;
+      --green-3: #17b37a;
+      --purple: #7c4dff;
+      --purple-2: #c084fc;
+      --pink: #ff4d8d;
+      --teal: #14b8a6;
+      --gold: #f5c542;
+      --orange: #fb923c;
+      --cyan: #22d3ee;
+      --red: #f43f5e;
+      --profit-green: #22c55e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    button { font-family: inherit; }
+    body {
+      font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.5;
+      background: var(--page);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(90deg, #14335f 0%, #1e4d8a 55%, #2563a8 100%);
+      color: #fff;
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 0 0 18px 18px;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: rgba(255,255,255,.12);
+      display: grid; place-items: center; font-size: 22px;
+    }
+    .header h1 {
+      font-size: 22px; letter-spacing: .4px; font-weight: 800;
+    }
+    .header p { font-size: 12px; opacity: .85; margin-top: 2px; }
+    .date-chip {
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.18);
+      padding: 8px 14px; border-radius: 10px; font-size: 13px;
+    }
+
+    .wrap { padding: 22px; max-width: 1280px; margin: 0 auto; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 1fr;
+      gap: 16px;
+    }
+    .card {
+      min-width: 0;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 16px 18px 18px;
+      box-shadow: 0 8px 24px rgba(22, 58, 107, .08);
+      min-height: 290px;
+    }
+    .card-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 10px; gap: 8px;
+    }
+    .title-row { display: flex; align-items: center; gap: 8px; }
+    .icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: grid; place-items: center; color: #fff; font-size: 14px;
+    }
+    .card h2 { font-size: 14px; font-weight: 800; }
+    .card .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .delta {
+      font-size: 12px; font-weight: 700; color: #16a34a;
+      display: flex; align-items: center; gap: 4px; white-space: nowrap;
+    }
+
+    .bars {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      height: 210px; padding: 22px 0 0; gap: 6px;
+    }
+    .bar-col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; height: 100%; }
+    .bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+    .bar {
+      width: 100%;
+      border-radius: 8px 8px 4px 4px;
+      background: linear-gradient(180deg, var(--green-1), var(--green-3));
+      position: relative;
+    }
+    .bar span {
+      position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+      font-size: 10px; font-weight: 700; color: #334155; white-space: nowrap;
+    }
+    .bar-col label {
+      margin-top: 6px; font-size: 10px; color: #64748b; font-weight: 600;
+      text-align: center; line-height: 1.25; min-height: 26px;
+    }
+    .y-axis {
+      display: flex; gap: 8px;
+    }
+
+    .donut-wrap {
+      display: grid; grid-template-columns: 1.1fr .9fr; gap: 8px; align-items: center;
+    }
+    .donut-box { position: relative; width: 170px; height: 170px; margin: 0 auto; }
+    .donut-box svg { transform: rotate(-90deg); }
+    .donut-center {
+      position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+    }
+    .donut-center b { font-size: 22px; display: block; }
+    .donut-center small { color: var(--muted); font-size: 11px; }
+    .legend { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .legend li { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-left: 6px; }
+    .legend .name { color: #475569; }
+
+    .h-bars { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+    .h-row { display: grid; grid-template-columns: 86px 1fr 54px; align-items: center; gap: 8px; }
+    .h-row span { font-size: 12px; font-weight: 700; color: #475569; }
+    .h-track { height: 18px; background: #f1f5f9; border-radius: 6px; overflow: hidden; }
+    .h-fill { height: 100%; border-radius: 6px; }
+    .h-row b { font-size: 12px; text-align: left; }
+
+    .treemap {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 8px;
+      height: 210px;
+      margin-top: 8px;
+    }
+    .tile {
+      border-radius: 12px; color: #fff; padding: 14px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .tile.big { grid-row: 1 / span 2; }
+    .tile h3 { font-size: 13px; font-weight: 700; opacity: .95; }
+    .tile .price { font-size: 26px; font-weight: 800; }
+    .t-classic { background: #14b8a6; }
+    .t-supreme { background: #f5c542; color: #1f2937; }
+    .t-chicken { background: #7c4dff; }
+    .t-veggie { background: #22d3ee; color: #0f172a; }
+    .t-size { background: #fb923c; }
+
+    .pay-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px;
+    }
+    .pay {
+      border: 1px solid #e8eef6; border-radius: 14px; padding: 16px 8px;
+      text-align: center; cursor: pointer; background: #fff;
+      transition: .15s ease; min-height: 92px;
+    }
+    .pay:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(22,58,107,.08); }
+    .pay.active { border-color: #1e4d8a; box-shadow: 0 0 0 2px rgba(30,77,138,.15); }
+    .pay .p-icon {
+      width: 36px; height: 36px; border-radius: 10px; margin: 0 auto 8px;
+      display: grid; place-items: center; color: #fff; font-size: 14px; font-weight: 700;
+    }
+    .pay small { font-size: 12px; font-weight: 700; color: #334155; }
+    .size-detail {
+      margin-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+      background: #f6f9fc; border-radius: 12px; padding: 10px;
+    }
+    .size-detail div { text-align: center; }
+    .size-detail small { display: block; font-size: 10px; color: var(--muted); }
+    .size-detail b { font-size: 14px; }
+    .note { font-size: 11px; color: var(--muted); text-align: center; padding: 14px 0 4px; }
+
+    .kpis {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;
+    }
+    .kpi {
+      background: #fff; border-radius: 14px; padding: 14px 16px;
+      box-shadow: 0 8px 24px rgba(22,58,107,.08);
+    }
+    .kpi .lbl { font-size: 12px; color: var(--muted); }
+    .kpi .val { font-size: 22px; font-weight: 800; margin-top: 4px; }
+
+    @media (max-width: 980px) {
+      .grid, .kpis { grid-template-columns: minmax(0, 1fr); }
+      .wrap { padding: 16px; }
+      .header { flex-wrap: wrap; gap: 10px; padding: 16px; }
+      .header h1 { font-size: 17px; }
+      .bar-col label { font-size: 9px; }
+      .treemap { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .tile { padding: 10px; }
+      .tile .price { font-size: 20px; }
+      .donut-wrap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">📊</div>
+      <div>
+        <h1>PIZZA SALES REPORT & DASHBOARD</h1>
+        <p>Track Performance • Discover Insights • Drive Growth</p>
+      </div>
+    </div>
+    <div class="date-chip" dir="ltr">1 Jan 2015 — 31 Dec 2015</div>
+  </header>
+
+  <main class="wrap">
+    <section class="kpis">
+      <div class="kpi"><div class="lbl">إجمالي الإيرادات</div><div class="val">$817.86K</div></div>
+      <div class="kpi"><div class="lbl">عدد الطلبات</div><div class="val">21,350</div></div>
+      <div class="kpi"><div class="lbl">إجمالي البيتزا المباعة</div><div class="val">49,574</div></div>
+      <div class="kpi"><div class="lbl">متوسط قيمة الطلب</div><div class="val">$38.31</div></div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="card-head">
+          <div class="title-row">
+            <div class="icon" style="background:#16a34a">▣</div>
+            <div>
+              <h2>TOTAL SALES by Pizza</h2>
+              <div class="sub">أعلى 7 أصناف — الإيرادات بالألف دولار</div>
+            </div>
+          </div>
+        </div>
+        <div class="bars" id="pizzaBars"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div class="title-row">
+            <div class="icon" style="background:#7c4dff">🍕</div>
+            <div>
+              <h2>TOTAL SALES by Category</h2>
+              <div class="sub">حصة الإيرادات حسب الفئة</div>
+            </div>
+          </div>
+        </div>
+        <div class="donut-wrap">
+          <div class="donut-box">
+            <svg viewBox="0 0 36 36" width="170" height="170" id="catDonut"></svg>
+            <div class="donut-center"><div><b>$817.9K</b><small>Total Sales</small></div></div>
+          </div>
+          <ul class="legend" id="catLegend"></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div class="title-row">
+            <div class="icon" style="background:#f59e0b">📐</div>
+            <div>
+              <h2>SALES by Size</h2>
+              <div class="sub">حصة الإيرادات حسب الحجم</div>
+            </div>
+          </div>
+        </div>
+        <div class="donut-wrap">
+          <div class="donut-box">
+            <svg viewBox="0 0 36 36" width="170" height="170" id="sizeDonut"></svg>
+            <div class="donut-center"><div><b>$817.9K</b><small>Total Sales</small></div></div>
+          </div>
+          <ul class="legend" id="sizeLegend"></ul>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div class="title-row">
+            <div class="icon" style="background:#2563eb">📅</div>
+            <div>
+              <h2>SALES by Day of Week</h2>
+              <div class="sub">الإيرادات حسب اليوم</div>
+            </div>
+          </div>
+        </div>
+        <div class="h-bars" id="dayBars"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div class="title-row">
+            <div class="icon" style="background:#0f766e">📘</div>
+            <div>
+              <h2>Average Price by Category</h2>
+              <div class="sub">متوسط سعر البيتزا = الإيرادات ÷ عدد البيتزا (USD)</div>
+            </div>
+          </div>
+        </div>
+        <div class="treemap">
+          <div class="tile big t-classic"><h3>Classic</h3><div class="price">$14.78</div></div>
+          <div class="tile t-supreme"><h3>Supreme</h3><div class="price">$17.37</div></div>
+          <div class="tile t-chicken"><h3>Chicken</h3><div class="price">$17.73</div></div>
+          <div class="tile t-veggie"><h3>Veggie</h3><div class="price">$16.63</div></div>
+          <div class="tile t-size"><h3>Large avg</h3><div class="price">$19.80</div></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <div class="title-row">
+            <div class="icon" style="background:#0284c7">📏</div>
+            <div>
+              <h2>Pizza Size</h2>
+              <div class="sub">اختَر الحجم لعرض تفاصيله</div>
+            </div>
+          </div>
+        </div>
+        <div class="pay-grid" id="sizes">
+          <button class="pay active" data-size="All"><div class="p-icon" style="background:#3b82f6">★</div><small>All</small></button>
+          <button class="pay" data-size="S"><div class="p-icon" style="background:#22c55e">S</div><small>Small</small></button>
+          <button class="pay" data-size="M"><div class="p-icon" style="background:#14b8a6">M</div><small>Medium</small></button>
+          <button class="pay" data-size="L"><div class="p-icon" style="background:#f43f5e">L</div><small>Large</small></button>
+          <button class="pay" data-size="XL"><div class="p-icon" style="background:#fb923c">XL</div><small>XL</small></button>
+          <button class="pay" data-size="XXL"><div class="p-icon" style="background:#8b5cf6">XXL</div><small>XXL</small></button>
+        </div>
+        <div class="size-detail" id="sizeDetail"></div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    // ===== Source data (2015) — every chart below is computed from these numbers =====
+    const TOTAL_REVENUE = 817860.05;
+
+    const pizzas = [ // revenue in USD
+      { name: "Thai Chicken",       v: 43434.25 },
+      { name: "BBQ Chicken",        v: 42768.00 },
+      { name: "California Chicken", v: 41409.50 },
+      { name: "Classic Deluxe",     v: 38180.50 },
+      { name: "Spicy Italian",      v: 34831.25 },
+      { name: "Southwest Chicken",  v: 34705.75 },
+      { name: "Italian Supreme",    v: 33476.75 }
+    ];
+
+    const categories = [
+      { name: "Classic", rev: 220053.10, color: "#7c4dff" },
+      { name: "Supreme", rev: 208197.00, color: "#c084fc" },
+      { name: "Chicken", rev: 195919.50, color: "#a78bfa" },
+      { name: "Veggie",  rev: 193690.45, color: "#ddd6fe" }
+    ];
+
+    const sizes = [
+      { key: "L",   name: "Large",  rev: 375318.70, qty: 18956, color: "#22c55e" },
+      { key: "M",   name: "Medium", rev: 249382.25, qty: 15635, color: "#f43f5e" },
+      { key: "S",   name: "Small",  rev: 178076.50, qty: 14403, color: "#86efac" },
+      { key: "XL",  name: "XL",     rev: 14076.00,  qty: 552,   color: "#fb923c" },
+      { key: "XXL", name: "XXL",    rev: 1006.60,   qty: 28,    color: "#8b5cf6" }
+    ];
+
+    const days = [
+      { name: "Friday",    rev: 136073.90, color: "#7c4dff" },
+      { name: "Thursday",  rev: 123528.50, color: "#a855f7" },
+      { name: "Saturday",  rev: 123182.40, color: "#ec4899" },
+      { name: "Wednesday", rev: 114408.40, color: "#fb923c" },
+      { name: "Tuesday",   rev: 114133.80, color: "#f59e0b" },
+      { name: "Monday",    rev: 107329.55, color: "#fbbf24" },
+      { name: "Sunday",    rev: 99203.50,  color: "#fde68a" }
+    ];
+
+    const pct = (v) => (v / TOTAL_REVENUE * 100);
+    const k = (v) => "$" + (v / 1000).toFixed(1) + "K";
+    const money = (v) => "$" + v.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+    // Sanity check: parts must add up to the total
+    [["categories", categories], ["sizes", sizes], ["days", days]].forEach(([n, arr]) => {
+      const s = arr.reduce((a, b) => a + b.rev, 0);
+      if (Math.abs(s - TOTAL_REVENUE) > 1) console.warn(`${n} sum ${s} ≠ total ${TOTAL_REVENUE}`);
+    });
+
+    // Top pizzas bar chart
+    const max = Math.max(...pizzas.map(p => p.v));
+    const bars = document.getElementById("pizzaBars");
+    pizzas.forEach(p => {
+      const h = (p.v / max) * 100;
+      const col = document.createElement("div");
+      col.className = "bar-col";
+      col.title = `${p.name}: ${money(p.v)}`;
+      col.innerHTML = `<div class="bar-wrap"><div class="bar" style="height:${h}%"><span>${(p.v / 1000).toFixed(1)}K</span></div></div><label>${p.name}</label>`;
+      bars.appendChild(col);
+    });
+
+    // Donut builder — arc lengths computed from real shares
+    function donut(svgId, legendId, items) {
+      const C = 2 * Math.PI * 14;
+      let offset = 0;
+      let svg = `<circle cx="18" cy="18" r="14" fill="none" stroke="#f1f5f9" stroke-width="6"></circle>`;
+      items.forEach(it => {
+        const len = pct(it.rev) / 100 * C;
+        svg += `<circle cx="18" cy="18" r="14" fill="none" stroke="${it.color}" stroke-width="6"
+                 stroke-dasharray="${len.toFixed(3)} ${(C - len).toFixed(3)}" stroke-dashoffset="${(-offset).toFixed(3)}">
+                 <title>${it.name}: ${money(it.rev)} (${pct(it.rev).toFixed(1)}%)</title></circle>`;
+        offset += len;
+      });
+      document.getElementById(svgId).innerHTML = svg;
+      document.getElementById(legendId).innerHTML = items.map(it =>
+        `<li><span class="name"><i class="dot" style="background:${it.color}"></i> ${it.name}</span><b>${pct(it.rev).toFixed(1)}%</b></li>`
+      ).join("");
+    }
+    donut("catDonut", "catLegend", categories);
+    donut("sizeDonut", "sizeLegend", sizes);
+
+    // Day of week bars
+    const dMax = Math.max(...days.map(d => d.rev));
+    document.getElementById("dayBars").innerHTML = days.map(d =>
+      `<div class="h-row" title="${money(d.rev)}"><span>${d.name}</span><div class="h-track"><div class="h-fill" style="width:${(d.rev / dMax * 100).toFixed(1)}%;background:${d.color}"></div></div><b>${k(d.rev)}</b></div>`
+    ).join("");
+
+    // Size picker — shows the selected size's figures
+    const detail = document.getElementById("sizeDetail");
+    function showSize(key) {
+      const list = key === "All" ? sizes : sizes.filter(s => s.key === key);
+      const rev = list.reduce((a, b) => a + b.rev, 0);
+      const qty = list.reduce((a, b) => a + b.qty, 0);
+      detail.innerHTML = `
+        <div><small>الإيرادات</small><b>${k(rev)}</b></div>
+        <div><small>عدد البيتزا</small><b>${qty.toLocaleString("en-US")}</b></div>
+        <div><small>الحصة</small><b>${pct(rev).toFixed(1)}%</b></div>
+        <div><small>متوسط السعر</small><b>$${(rev / qty).toFixed(2)}</b></div>`;
+    }
+    showSize("All");
+
+    document.getElementById("sizes").addEventListener("click", (e) => {
+      const btn = e.target.closest(".pay");
+      if (!btn) return;
+      document.querySelectorAll(".pay").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      showSize(btn.dataset.size);
+    });
+  </script>
+</body>
+</html>
